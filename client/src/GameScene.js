@@ -11,7 +11,6 @@ const WAYPOINTS = [
   { x: 800, y: 450 },
 ];
 
-const TOWER_COST = 50;
 const TOWER_RANGE = 120;
 const SERVER_URL = `ws://${window.location.hostname}:2567`;
 
@@ -22,6 +21,7 @@ export class GameScene extends Phaser.Scene {
     this.enemySprites = {};
     this.towerSprites = {};
     this.placingTower = false;
+    this.placingStrongTower = false;
   }
 
   preload() {}
@@ -31,9 +31,15 @@ export class GameScene extends Phaser.Scene {
     this._setupInput();
     this._connectToServer();
 
-    // Listen for UI scene telling us to enter tower-placement mode
     this.game.events.on("place_tower_mode", () => {
       this.placingTower = true;
+      this.placingStrongTower = false;
+      this.input.setDefaultCursor("crosshair");
+    });
+
+    this.game.events.on("place_strong_tower_mode", () => {
+      this.placingStrongTower = true;
+      this.placingTower = false;
       this.input.setDefaultCursor("crosshair");
     });
   }
@@ -106,25 +112,33 @@ export class GameScene extends Phaser.Scene {
   }
 
   _createTowerSprite(id, tower) {
+    const strong = tower.damage > 10;
+    const color     = strong ? 0xe67e22 : 0x3498db;
+    const darkColor = strong ? 0x9a5200 : 0x1a6ea8;
+    const size      = strong ? 18 : 14;
+
     const gfx = this.add.graphics();
-    // Range circle
-    gfx.lineStyle(1, 0x3498db, 0.3);
+    gfx.lineStyle(1, color, 0.3);
     gfx.strokeCircle(tower.x, tower.y, TOWER_RANGE);
-    // Tower body
-    gfx.fillStyle(0x3498db, 1);
-    gfx.fillRect(tower.x - 14, tower.y - 14, 28, 28);
-    // Barrel
-    gfx.fillStyle(0x1a6ea8, 1);
-    gfx.fillRect(tower.x - 4, tower.y - 24, 8, 14);
+    gfx.fillStyle(color, 1);
+    gfx.fillRect(tower.x - size, tower.y - size, size * 2, size * 2);
+    gfx.fillStyle(darkColor, 1);
+    gfx.fillRect(tower.x - 4, tower.y - size - 10, 8, 14);
     this.towerSprites[id] = gfx;
   }
 
   _setupInput() {
     this.input.on("pointerdown", (pointer) => {
-      if (!this.placingTower || !this.room) return;
-      this.room.send("place_tower", { x: Math.round(pointer.x), y: Math.round(pointer.y) });
-      this.placingTower = false;
-      this.input.setDefaultCursor("default");
+      if (!this.room) return;
+      if (this.placingTower) {
+        this.room.send("place_tower", { x: Math.round(pointer.x), y: Math.round(pointer.y) });
+        this.placingTower = false;
+        this.input.setDefaultCursor("default");
+      } else if (this.placingStrongTower) {
+        this.room.send("place_strong_tower", { x: Math.round(pointer.x), y: Math.round(pointer.y) });
+        this.placingStrongTower = false;
+        this.input.setDefaultCursor("default");
+      }
     });
   }
 

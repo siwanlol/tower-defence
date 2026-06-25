@@ -15,6 +15,7 @@ class Tower extends Schema {}
 type("number")(Tower.prototype, "x");
 type("number")(Tower.prototype, "y");
 type("string")(Tower.prototype, "ownerId");
+type("number")(Tower.prototype, "damage");
 
 class GameState extends Schema {}
 type({ map: Enemy })(GameState.prototype, "enemies");
@@ -40,6 +41,8 @@ const TICK_MS = 1000 / TICK_RATE;
 const TOWER_COST = 50;
 const TOWER_RANGE = 120;
 const TOWER_DAMAGE = 10;
+const STRONG_TOWER_COST = 100;
+const STRONG_TOWER_DAMAGE = 20;
 const TOWER_FIRE_RATE = 1000; // ms between shots
 const START_GOLD = 200;
 const START_LIVES = 20;
@@ -64,7 +67,11 @@ class GameRoom extends Room {
     this.setSimulationInterval((dt) => this._tick(dt), TICK_MS);
 
     this.onMessage("place_tower", (client, data) => {
-      this._placeTower(client, data.x, data.y);
+      this._placeTower(client, data.x, data.y, TOWER_COST, TOWER_DAMAGE);
+    });
+
+    this.onMessage("place_strong_tower", (client, data) => {
+      this._placeTower(client, data.x, data.y, STRONG_TOWER_COST, STRONG_TOWER_DAMAGE);
     });
 
     this.onMessage("start_wave", (client) => {
@@ -121,7 +128,7 @@ class GameRoom extends Room {
       const target = this._findTarget(tower);
       if (target) {
         this._towerCooldowns[towerId] = now;
-        target.hp -= TOWER_DAMAGE;
+        target.hp -= tower.damage;
         if (target.hp <= 0) {
           target.alive = false;
           this.state.gold += 25;
@@ -205,16 +212,17 @@ class GameRoom extends Room {
     return closest;
   }
 
-  _placeTower(client, x, y) {
-    if (this.state.gold < TOWER_COST) return;
+  _placeTower(client, x, y, cost, damage) {
+    if (this.state.gold < cost) return;
     const id = `t${client.sessionId}_${Date.now()}`;
     const tower = new Tower();
     tower.x = x;
     tower.y = y;
     tower.ownerId = client.sessionId;
+    tower.damage = damage;
     this.state.towers.set(id, tower);
-    this.state.gold -= TOWER_COST;
-    console.log(`Tower placed at (${x}, ${y}) by ${client.sessionId}`);
+    this.state.gold -= cost;
+    console.log(`Tower (dmg:${damage}) placed at (${x}, ${y}) by ${client.sessionId}`);
   }
 }
 

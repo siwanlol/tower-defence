@@ -20,15 +20,17 @@ export class UIScene extends Phaser.Scene {
       fontSize: "20px", fill: "#ecf0f1"
     }).setOrigin(0.5).setDepth(10);
 
-    // Place Tower button
     const btn = this.add.rectangle(650, 20, 130, 30, 0x3498db).setInteractive({ useHandCursor: true });
-    const btnText = this.add.text(650, 20, "Place Tower (50g)", {
-      fontSize: "12px", fill: "#fff"
-    }).setOrigin(0.5);
-
+    this.add.text(650, 20, "Place Tower (50g)", { fontSize: "12px", fill: "#fff" }).setOrigin(0.5);
     btn.on("pointerover", () => btn.setFillStyle(0x2980b9));
     btn.on("pointerout",  () => btn.setFillStyle(0x3498db));
     btn.on("pointerdown", () => this.game.events.emit("place_tower_mode"));
+
+    const strongBtn = this.add.rectangle(800, 20, 150, 30, 0xe67e22).setInteractive({ useHandCursor: true });
+    this.add.text(800, 20, "Strong Tower (100g)", { fontSize: "12px", fill: "#fff" }).setOrigin(0.5);
+    strongBtn.on("pointerover", () => strongBtn.setFillStyle(0xca6f1e));
+    strongBtn.on("pointerout",  () => strongBtn.setFillStyle(0xe67e22));
+    strongBtn.on("pointerdown", () => this.game.events.emit("place_strong_tower_mode"));
 
     // Start Wave button
     const waveBtn = this.add.rectangle(650, 570, 130, 30, 0x27ae60).setInteractive({ useHandCursor: true });
