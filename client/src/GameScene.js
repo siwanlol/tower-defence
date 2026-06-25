@@ -13,7 +13,7 @@ const WAYPOINTS = [
 
 const TOWER_COST = 50;
 const TOWER_RANGE = 120;
-const SERVER_URL = "ws://localhost:2567";
+const SERVER_URL = `ws://${window.location.hostname}:2567`;
 
 export class GameScene extends Phaser.Scene {
   constructor() {

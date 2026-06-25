@@ -13,5 +13,8 @@
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
+  },
+  "allowScripts": {
+    "msgpackr-extract@3.0.4": true
   }
 }
