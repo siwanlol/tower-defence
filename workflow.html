@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tower Defense — Jam Day Workflow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0f1117; font-family: system-ui, sans-serif; color: #f0f0f0; padding: 40px 24px; }
+
+    .page-title { text-align: center; font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+    .page-sub   { text-align: center; font-size: 13px; color: #888; margin-bottom: 32px; }
+
+    .phase { display: flex; gap: 0; margin-bottom: 12px; align-items: stretch; max-width: 1000px; margin-left: auto; margin-right: auto; }
+    .phase-label {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 8px 6px;
+      min-width: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-left: 3px solid #333;
+    }
+    .phase-label.prep  { border-color: #3b4a6b; color: #5b9bd5; }
+    .phase-label.start { border-color: #2a5a3a; color: #27ae60; }
+    .phase-label.loop  { border-color: #6a3000; color: #e67e22; }
+    .phase-label.end   { border-color: #4a1060; color: #9b59b6; }
+
+    .phase-content { flex: 1; display: flex; gap: 10px; padding: 6px 0 6px 14px; flex-wrap: wrap; }
+
+    .step {
+      background: #1a1d27;
+      border-radius: 8px;
+      padding: 14px 16px;
+      flex: 1;
+      min-width: 160px;
+      max-width: 220px;
+      border-top: 3px solid #333;
+    }
+    .step.simon  { border-color: #5b9bd5; }
+    .step.personb{ border-color: #27ae60; }
+    .step.personc{ border-color: #9b59b6; }
+    .step.all    { border-color: #e67e22; }
+
+    .step-who {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    .step.simon   .step-who { color: #5b9bd5; }
+    .step.personb .step-who { color: #27ae60; }
+    .step.personc .step-who { color: #9b59b6; }
+    .step.all     .step-who { color: #e67e22; }
+
+    .step-title { font-size: 13px; font-weight: 600; color: #e0e0e0; margin-bottom: 6px; }
+    .step-desc  { font-size: 11px; color: #888; line-height: 1.6; }
+
+    .tool-tag {
+      display: inline-block;
+      background: #22263a;
+      border-radius: 4px;
+      padding: 2px 7px;
+      font-size: 10px;
+      color: #aaa;
+      margin-top: 8px;
+      margin-right: 4px;
+    }
+
+    .phase-arrow {
+      text-align: center;
+      font-size: 14px;
+      color: #444;
+      margin: 4px 0 4px 44px;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .loop-note {
+      background: #1e1a00;
+      border: 1px solid #5a4400;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 12px;
+      color: #c8a840;
+      margin: 0 auto 10px auto;
+      max-width: 1000px;
+      line-height: 1.6;
+    }
+    .loop-note strong { color: #e6c040; }
+
+    .legend {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 24px auto 0 auto;
+      max-width: 1000px;
+      padding-top: 16px;
+      border-top: 1px solid #222;
+    }
+    .legend-item { display: flex; align-items: center; gap: 7px; font-size: 12px; color: #aaa; }
+    .legend-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .dot-a   { background: #5b9bd5; }
+    .dot-b   { background: #27ae60; }
+    .dot-c   { background: #9b59b6; }
+    .dot-all { background: #e67e22; }
+
+    footer { text-align: center; margin-top: 40px; font-size: 12px; color: #444; }
+  </style>
+</head>
+<body>
+
+<div class="page-title">Jam Day Workflow</div>
+<div class="page-sub">Who does what, when, and with which tools</div>
+
+<!-- PREP -->
+<div class="phase">
+  <div class="phase-label prep">Prep Weeks</div>
+  <div class="phase-content">
+    <div class="step simon">
+      <div class="step-who">🔵 Person A (Simon)</div>
+      <div class="step-title">Set up the repo</div>
+      <div class="step-desc">Create GitHub repo, push skeleton, share link with team.</div>
+      <span class="tool-tag">GitHub Desktop</span>
+      <span class="tool-tag">VS Code</span>
+    </div>
+    <div class="step personb">
+      <div class="step-who">🟢 Person B</div>
+      <div class="step-title">Learn rendering basics</div>
+      <div class="step-desc">Clone repo. Open GameScene.js. Try changing enemy color or size.</div>
+      <span class="tool-tag">VS Code</span>
+      <span class="tool-tag">Browser</span>
+    </div>
+    <div class="step personc">
+      <div class="step-who">🟣 Person C</div>
+      <div class="step-title">Learn UI basics</div>
+      <div class="step-desc">Clone repo. Open UIScene.js. Try adding a text label or button.</div>
+      <span class="tool-tag">VS Code</span>
+      <span class="tool-tag">Browser</span>
+    </div>
+    <div class="step all">
+      <div class="step-who">🟠 Everyone</div>
+      <div class="step-title">Test multiplayer together</div>
+      <div class="step-desc">One person runs the server. Others open the IP in browser. Confirm you can all see the same game.</div>
+      <span class="tool-tag">Browser</span>
+    </div>
+  </div>
+</div>
+
+<div class="phase-arrow">▼ Jam day starts</div>
+
+<!-- MORNING -->
+<div class="phase">
+  <div class="phase-label start">Morning</div>
+  <div class="phase-content">
+    <div class="step simon">
+      <div class="step-who">🔵 Person A (Simon)</div>
+      <div class="step-title">Start the server</div>
+      <div class="step-desc">Open VS Code → open terminal (Ctrl+`) → run server &amp; client. Share your IP so everyone can connect.</div>
+      <span class="tool-tag">VS Code terminal</span>
+      <span class="tool-tag">npm run dev</span>
+    </div>
+    <div class="step all">
+      <div class="step-who">🟠 Everyone</div>
+      <div class="step-title">git pull + plan the day</div>
+      <div class="step-desc">Pull latest code. Spend 15 min deciding: what are the 3 things we must have working by end of day?</div>
+      <span class="tool-tag">GitHub Desktop</span>
+      <span class="tool-tag">git pull</span>
+    </div>
+    <div class="step all">
+      <div class="step-who">🟠 Everyone</div>
+      <div class="step-title">Open your file in VS Code</div>
+      <div class="step-desc">Each person opens their own file. Don't touch the others' files unless you agree first.</div>
+      <span class="tool-tag">VS Code</span>
+    </div>
+  </div>
+</div>
+
+<div class="phase-arrow">▼ Build loop begins</div>
+
+<div class="loop-note">
+  <strong>The build loop</strong> — repeat this all day. Each cycle should take 10–30 minutes max. If something is taking longer, ask Claude to help or simplify the goal.
+</div>
+
+<!-- BUILD LOOP -->
+<div class="phase">
+  <div class="phase-label loop">Build Loop</div>
+  <div class="phase-content">
+    <div class="step all" style="max-width: 175px;">
+      <div class="step-who">🟠 1 · Decide</div>
+      <div class="step-title">Pick one small thing</div>
+      <div class="step-desc">e.g. "add a second tower type" or "make enemies speed up each wave."</div>
+    </div>
+    <div class="step all" style="max-width: 175px;">
+      <div class="step-who">🟠 2 · Ask Claude</div>
+      <div class="step-title">Describe it, get code</div>
+      <div class="step-desc">Open Claude Code. Describe what you want. Paste the code into your file in VS Code.</div>
+      <span class="tool-tag">Claude Code</span>
+    </div>
+    <div class="step all" style="max-width: 175px;">
+      <div class="step-who">🟠 3 · Test it</div>
+      <div class="step-title">Open browser, try it</div>
+      <div class="step-desc">Does it work? Open http://localhost:5173 and play it. Check all players see the same thing.</div>
+      <span class="tool-tag">Browser</span>
+    </div>
+    <div class="step all" style="max-width: 175px;">
+      <div class="step-who">🟠 4 · Commit</div>
+      <div class="step-title">Save to git if it works</div>
+      <div class="step-desc">git add . → git commit -m "what I did" → git push. Only push working code.</div>
+      <span class="tool-tag">GitHub Desktop</span>
+      <span class="tool-tag">git push</span>
+    </div>
+    <div class="step all" style="max-width: 175px;">
+      <div class="step-who">🟠 5 · Pull</div>
+      <div class="step-title">Get teammates' work</div>
+      <div class="step-desc">git pull before starting the next thing so you always have the latest from the others.</div>
+      <span class="tool-tag">git pull</span>
+    </div>
+  </div>
+</div>
+
+<div class="phase-arrow">▼ End of day</div>
+
+<!-- END OF DAY -->
+<div class="phase">
+  <div class="phase-label end">End of Day</div>
+  <div class="phase-content">
+    <div class="step all">
+      <div class="step-who">🟠 Everyone</div>
+      <div class="step-title">Push everything</div>
+      <div class="step-desc">Make sure all work is committed and pushed. No uncommitted code left on anyone's machine.</div>
+      <span class="tool-tag">git push</span>
+    </div>
+    <div class="step all">
+      <div class="step-who">🟠 Everyone</div>
+      <div class="step-title">Playtest together</div>
+      <div class="step-desc">All three open the game in the browser. Play a full session. Write down what to fix tomorrow.</div>
+      <span class="tool-tag">Browser</span>
+    </div>
+    <div class="step simon">
+      <div class="step-who">🔵 Person A (Simon)</div>
+      <div class="step-title">Stop the server</div>
+      <div class="step-desc">Ctrl+C in both terminal tabs. The game goes offline — that's fine, you're done for the day.</div>
+      <span class="tool-tag">VS Code terminal</span>
+    </div>
+  </div>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot dot-a"></div> Person A (Simon) — game logic · server/GameRoom.js</div>
+  <div class="legend-item"><div class="legend-dot dot-b"></div> Person B — visuals · client/src/GameScene.js</div>
+  <div class="legend-item"><div class="legend-dot dot-c"></div> Person C — UI &amp; buttons · client/src/UIScene.js</div>
+  <div class="legend-item"><div class="legend-dot dot-all"></div> Everyone together</div>
+</div>
+
+<footer>Tower Defense Game Jam — github.com/siwanlol/tower-defence</footer>
+
+</body>
+</html>
