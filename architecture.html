@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tower Defense — How It's Built</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0f1117;
+      color: #f0f0f0;
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    .subtitle {
+      color: #888;
+      font-size: 14px;
+      margin-bottom: 36px;
+      text-align: center;
+    }
+    svg {
+      width: 100%;
+      max-width: 900px;
+      height: auto;
+    }
+
+    /* Quick reference cards below the diagram */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      max-width: 900px;
+      width: 100%;
+      margin-top: 40px;
+    }
+    .card {
+      background: #1a1d27;
+      border-radius: 10px;
+      padding: 20px 24px;
+      border-left: 4px solid #ccc;
+    }
+    .card.blue  { border-color: #5b9bd5; }
+    .card.green { border-color: #27ae60; }
+    .card.purple{ border-color: #9b59b6; }
+    .card h2 { font-size: 15px; margin-bottom: 12px; }
+    .card.blue   h2 { color: #5b9bd5; }
+    .card.green  h2 { color: #27ae60; }
+    .card.purple h2 { color: #9b59b6; }
+    .card p  { font-size: 13px; color: #aaa; line-height: 1.6; margin-bottom: 8px; }
+    .card code {
+      display: inline-block;
+      background: #22263a;
+      color: #e0e0e0;
+      font-family: monospace;
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-top: 4px;
+    }
+    .tip {
+      max-width: 900px;
+      width: 100%;
+      margin-top: 20px;
+      background: #1e3a1e;
+      border: 1px solid #2a5a2a;
+      border-radius: 8px;
+      padding: 16px 20px;
+      font-size: 13px;
+      color: #aaa;
+      line-height: 1.7;
+    }
+    .tip strong { color: #f0f0f0; }
+    footer {
+      margin-top: 48px;
+      font-size: 12px;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Tower Defense — How It's Built</h1>
+  <p class="subtitle">A map for the team. No prior code experience needed to read this.</p>
+
+  <svg viewBox="0 0 900 720" xmlns="http://www.w3.org/2000/svg">
+
+    <!-- ══ SERVER ══ -->
+    <rect x="30" y="80" width="360" height="490" rx="12" fill="#1a1d27" stroke="#3b4a6b" stroke-width="2"/>
+    <rect x="30" y="80" width="360" height="44" rx="12" fill="#1e3a5f"/>
+    <rect x="30" y="112" width="360" height="12" fill="#1e3a5f"/>
+    <text x="210" y="108" text-anchor="middle" font-size="15" font-weight="700" fill="#5b9bd5" font-family="system-ui,sans-serif">🖥  SERVER</text>
+    <text x="210" y="128" text-anchor="middle" font-size="11" fill="#5b9bd5" font-family="system-ui,sans-serif">Runs on Simon's computer only</text>
+
+    <rect x="55" y="148" width="310" height="66" rx="8" fill="#22263a" stroke="#3b4a6b" stroke-width="1.5"/>
+    <text x="75" y="169" font-size="13" font-weight="700" fill="#e0e0e0" font-family="system-ui,sans-serif">index.js</text>
+    <text x="75" y="186" font-size="11" fill="#888" font-family="system-ui,sans-serif">Starts the server. Glues everything together.</text>
+    <text x="75" y="201" font-size="11" fill="#888" font-family="system-ui,sans-serif">Rarely needs touching.</text>
+    <text x="350" y="172" text-anchor="end" font-size="10" fill="#3b4a6b" font-family="monospace">server/index.js</text>
+
+    <line x1="210" y1="214" x2="210" y2="234" stroke="#3b4a6b" stroke-width="2" marker-end="url(#arr-blue)"/>
+
+    <rect x="55" y="234" width="310" height="290" rx="8" fill="#22263a" stroke="#e67e22" stroke-width="2"/>
+    <rect x="55" y="234" width="310" height="36" rx="8" fill="#3d2000"/>
+    <rect x="55" y="258" width="310" height="12" fill="#3d2000"/>
+    <text x="75" y="257" font-size="13" font-weight="700" fill="#e67e22" font-family="system-ui,sans-serif">GameRoom.js  ←  PERSON A's file</text>
+
+    <rect x="70" y="280" width="280" height="52" rx="6" fill="#1e1e2e" stroke="#555" stroke-width="1"/>
+    <text x="85" y="298" font-size="12" font-weight="600" fill="#e0e0e0" font-family="system-ui,sans-serif">🗺  Path &amp; Waypoints</text>
+    <text x="85" y="313" font-size="11" fill="#888" font-family="system-ui,sans-serif">The route enemies walk. Edit the</text>
+    <text x="85" y="326" font-size="11" fill="#888" font-family="system-ui,sans-serif">WAYPOINTS array to change the path.</text>
+
+    <rect x="70" y="342" width="280" height="52" rx="6" fill="#1e1e2e" stroke="#555" stroke-width="1"/>
+    <text x="85" y="360" font-size="12" font-weight="600" fill="#e0e0e0" font-family="system-ui,sans-serif">👾  Enemy Logic</text>
+    <text x="85" y="375" font-size="11" fill="#888" font-family="system-ui,sans-serif">Speed, HP, spawning, wave size.</text>
+    <text x="85" y="388" font-size="11" fill="#888" font-family="system-ui,sans-serif">Edit constants at top of file.</text>
+
+    <rect x="70" y="404" width="280" height="52" rx="6" fill="#1e1e2e" stroke="#555" stroke-width="1"/>
+    <text x="85" y="422" font-size="12" font-weight="600" fill="#e0e0e0" font-family="system-ui,sans-serif">🏰  Tower Logic</text>
+    <text x="85" y="437" font-size="11" fill="#888" font-family="system-ui,sans-serif">Range, damage, fire rate, cost.</text>
+    <text x="85" y="450" font-size="11" fill="#888" font-family="system-ui,sans-serif">Edit TOWER_* constants at top.</text>
+
+    <rect x="70" y="466" width="280" height="50" rx="6" fill="#1e1e2e" stroke="#555" stroke-width="1"/>
+    <text x="85" y="484" font-size="12" font-weight="600" fill="#e0e0e0" font-family="system-ui,sans-serif">💰  Gold &amp; Lives</text>
+    <text x="85" y="499" font-size="11" fill="#888" font-family="system-ui,sans-serif">START_GOLD, START_LIVES, rewards.</text>
+    <text x="85" y="512" font-size="11" fill="#888" font-family="system-ui,sans-serif">All constants at top of file.</text>
+
+    <text x="210" y="584" text-anchor="middle" font-size="11" fill="#888" font-family="system-ui,sans-serif">Port 2567  •  run: npm run dev in /server</text>
+
+    <!-- ══ SYNC ══ -->
+    <rect x="406" y="270" width="88" height="110" rx="8" fill="#1a1d27" stroke="#2a3a2a" stroke-width="1.5"/>
+    <text x="450" y="305" text-anchor="middle" font-size="18" font-family="system-ui,sans-serif">🔄</text>
+    <text x="450" y="325" text-anchor="middle" font-size="11" font-weight="600" fill="#ccc" font-family="system-ui,sans-serif">Live sync</text>
+    <text x="450" y="341" text-anchor="middle" font-size="10" fill="#888" font-family="system-ui,sans-serif">Server tells all</text>
+    <text x="450" y="354" text-anchor="middle" font-size="10" fill="#888" font-family="system-ui,sans-serif">browsers what</text>
+    <text x="450" y="367" text-anchor="middle" font-size="10" fill="#888" font-family="system-ui,sans-serif">to show</text>
+
+    <line x1="394" y1="315" x2="370" y2="315" stroke="#2ecc71" stroke-width="2" marker-end="url(#arr-green)"/>
+    <line x1="406" y1="335" x2="510" y2="335" stroke="#3498db" stroke-width="2" marker-end="url(#arr-cyan)"/>
+    <line x1="510" y1="355" x2="406" y2="355" stroke="#9b59b6" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arr-purple)"/>
+    <line x1="370" y1="335" x2="394" y2="335" stroke="#9b59b6" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+    <text x="450" y="398" text-anchor="middle" font-size="10" fill="#9b59b6" font-family="system-ui,sans-serif">player clicks</text>
+    <text x="450" y="411" text-anchor="middle" font-size="10" fill="#2ecc71" font-family="system-ui,sans-serif">game state</text>
+
+    <!-- ══ CLIENT ══ -->
+    <rect x="510" y="80" width="360" height="490" rx="12" fill="#1a1d27" stroke="#2a5a3a" stroke-width="2"/>
+    <rect x="510" y="80" width="360" height="44" rx="12" fill="#0d3320"/>
+    <rect x="510" y="112" width="360" height="12" fill="#0d3320"/>
+    <text x="690" y="108" text-anchor="middle" font-size="15" font-weight="700" fill="#2ecc71" font-family="system-ui,sans-serif">🌐  CLIENT (Browser)</text>
+    <text x="690" y="128" text-anchor="middle" font-size="11" fill="#2ecc71" font-family="system-ui,sans-serif">Everyone opens this — no install needed</text>
+
+    <rect x="535" y="148" width="310" height="66" rx="8" fill="#22263a" stroke="#2a5a3a" stroke-width="1.5"/>
+    <text x="555" y="169" font-size="13" font-weight="700" fill="#e0e0e0" font-family="system-ui,sans-serif">main.js</text>
+    <text x="555" y="186" font-size="11" fill="#888" font-family="system-ui,sans-serif">Boots the game. Sets canvas size.</text>
+    <text x="555" y="201" font-size="11" fill="#888" font-family="system-ui,sans-serif">Rarely needs touching.</text>
+    <text x="830" y="172" text-anchor="end" font-size="10" fill="#2a5a3a" font-family="monospace">client/src/main.js</text>
+
+    <line x1="690" y1="214" x2="690" y2="234" stroke="#2a5a3a" stroke-width="2" marker-end="url(#arr-green2)"/>
+
+    <rect x="535" y="234" width="310" height="160" rx="8" fill="#22263a" stroke="#27ae60" stroke-width="2"/>
+    <rect x="535" y="234" width="310" height="36" rx="12" fill="#0d2a1a"/>
+    <rect x="535" y="258" width="310" height="12" fill="#0d2a1a"/>
+    <text x="555" y="257" font-size="13" font-weight="700" fill="#27ae60" font-family="system-ui,sans-serif">GameScene.js  ←  PERSON B's file</text>
+
+    <rect x="550" y="280" width="280" height="50" rx="6" fill="#1e1e2e" stroke="#555" stroke-width="1"/>
+    <text x="565" y="298" font-size="12" font-weight="600" fill="#e0e0e0" font-family="system-ui,sans-serif">🎨  Drawing Everything</text>
+    <text x="565" y="313" font-size="11" fill="#888" font-family="system-ui,sans-serif">Enemies, towers, path, health bars.</text>
+    <text x="565" y="326" font-size="11" fill="#888" font-family="system-ui,sans-serif">Change colors, sizes, shapes here.</text>
+
+    <rect x="550" y="340" width="280" height="46" rx="6" fill="#1e1e2e" stroke="#555" stroke-width="1"/>
+    <text x="565" y="358" font-size="12" font-weight="600" fill="#e0e0e0" font-family="system-ui,sans-serif">🖱  Click Input</text>
+    <text x="565" y="373" font-size="11" fill="#888" font-family="system-ui,sans-serif">Detects where player clicks to place tower.</text>
+    <text x="565" y="386" font-size="11" fill="#888" font-family="system-ui,sans-serif">Sends the click to the server.</text>
+
+    <rect x="535" y="408" width="310" height="152" rx="8" fill="#22263a" stroke="#8e44ad" stroke-width="2"/>
+    <rect x="535" y="408" width="310" height="36" rx="12" fill="#2a1040"/>
+    <rect x="535" y="432" width="310" height="12" fill="#2a1040"/>
+    <text x="555" y="431" font-size="13" font-weight="700" fill="#9b59b6" font-family="system-ui,sans-serif">UIScene.js  ←  PERSON C's file</text>
+
+    <rect x="550" y="454" width="280" height="46" rx="6" fill="#1e1e2e" stroke="#555" stroke-width="1"/>
+    <text x="565" y="472" font-size="12" font-weight="600" fill="#e0e0e0" font-family="system-ui,sans-serif">📊  HUD Display</text>
+    <text x="565" y="487" font-size="11" fill="#888" font-family="system-ui,sans-serif">Gold counter, wave number, lives.</text>
+    <text x="565" y="500" font-size="11" fill="#888" font-family="system-ui,sans-serif">Add new info displays here.</text>
+
+    <rect x="550" y="508" width="280" height="44" rx="6" fill="#1e1e2e" stroke="#555" stroke-width="1"/>
+    <text x="565" y="526" font-size="12" font-weight="600" fill="#e0e0e0" font-family="system-ui,sans-serif">🔘  Buttons &amp; Menus</text>
+    <text x="565" y="541" font-size="11" fill="#888" font-family="system-ui,sans-serif">Place Tower, Start Wave. Add new buttons here.</text>
+
+    <text x="690" y="584" text-anchor="middle" font-size="11" fill="#888" font-family="system-ui,sans-serif">Port 5173  •  run: npm run dev in /client</text>
+
+    <!-- ══ BOTTOM RULE ══ -->
+    <rect x="30" y="590" width="840" height="110" rx="10" fill="#1a1d27" stroke="#3b4a6b" stroke-width="1.5"/>
+    <text x="450" y="614" text-anchor="middle" font-size="13" font-weight="700" fill="#f0f0f0" font-family="system-ui,sans-serif">⚠  One Rule: Waypoints must match in BOTH files</text>
+    <text x="450" y="634" text-anchor="middle" font-size="11" fill="#888" font-family="system-ui,sans-serif">server/GameRoom.js has a WAYPOINTS array. client/src/GameScene.js has the same array.</text>
+    <text x="450" y="650" text-anchor="middle" font-size="11" fill="#888" font-family="system-ui,sans-serif">If you change the path, update it in BOTH places or enemies will move differently than what's drawn.</text>
+
+    <rect x="50" y="665" width="240" height="28" rx="6" fill="#1e3a5f"/>
+    <text x="170" y="683" text-anchor="middle" font-size="11" fill="#5b9bd5" font-family="system-ui,sans-serif">🔵 Person A — server/GameRoom.js</text>
+    <rect x="330" y="665" width="240" height="28" rx="6" fill="#0d3320"/>
+    <text x="450" y="683" text-anchor="middle" font-size="11" fill="#27ae60" font-family="system-ui,sans-serif">🟢 Person B — client/src/GameScene.js</text>
+    <rect x="610" y="665" width="260" height="28" rx="6" fill="#2a1040"/>
+    <text x="740" y="683" text-anchor="middle" font-size="11" fill="#9b59b6" font-family="system-ui,sans-serif">🟣 Person C — client/src/UIScene.js</text>
+
+    <defs>
+      <marker id="arr-blue" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="#3b4a6b"/>
+      </marker>
+      <marker id="arr-green" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="#2ecc71"/>
+      </marker>
+      <marker id="arr-green2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="#2a5a3a"/>
+      </marker>
+      <marker id="arr-cyan" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="#3498db"/>
+      </marker>
+      <marker id="arr-purple" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L0,6 L8,3 z" fill="#9b59b6"/>
+      </marker>
+    </defs>
+  </svg>
+
+  <!-- Quick reference cards -->
+  <div class="cards">
+    <div class="card blue">
+      <h2>🔵 Person A — Game Logic</h2>
+      <p>Your file: <code>server/GameRoom.js</code></p>
+      <p>All the numbers that control how the game feels are constants at the very top of this file. Change them and save — the server restarts automatically.</p>
+      <p>Things to tweak: enemy speed, HP, gold rewards, tower damage, tower range, wave sizes, lives.</p>
+    </div>
+    <div class="card green">
+      <h2>🟢 Person B — Visuals</h2>
+      <p>Your file: <code>client/src/GameScene.js</code></p>
+      <p>Everything you see on screen is drawn here. Enemies are red rectangles, towers are blue rectangles — change colors, sizes, or swap in images.</p>
+      <p>The path is drawn using the WAYPOINTS array at the top. Keep it in sync with GameRoom.js if you change it.</p>
+    </div>
+    <div class="card purple">
+      <h2>🟣 Person C — UI &amp; Buttons</h2>
+      <p>Your file: <code>client/src/UIScene.js</code></p>
+      <p>The HUD bar at the top, the Place Tower button, the Start Wave button — all here. Add new buttons, score displays, wave countdowns, or a win screen.</p>
+      <p>This scene runs on top of the game canvas and never interferes with gameplay.</p>
+    </div>
+  </div>
+
+  <div class="tip">
+    <strong>How to start each session:</strong>
+    Open VS Code → open a terminal → <code>git pull</code> to get the latest from your teammates →
+    start the server (<code>cd server &amp;&amp; npm run dev</code>) and client (<code>cd client &amp;&amp; npm run dev</code>) in two terminals →
+    open <strong>http://localhost:5173</strong> in your browser → start building.<br><br>
+    <strong>When something works, commit it:</strong>
+    <code>git add . &amp;&amp; git commit -m "what I changed" &amp;&amp; git push</code>
+  </div>
+
+  <footer>Tower Defense Game Jam — github.com/siwanlol/tower-defence</footer>
+
+</body>
+</html>
