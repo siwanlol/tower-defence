@@ -113,12 +113,109 @@
     .dot-all { background: #e67e22; }
 
     footer { text-align: center; margin-top: 40px; font-size: 12px; color: #444; }
+
+    /* Claude Code box */
+    .claude-box {
+      max-width: 1000px;
+      margin: 0 auto 24px auto;
+      background: #0d1a0d;
+      border: 1px solid #1e4a1e;
+      border-radius: 10px;
+      padding: 18px 22px;
+    }
+    .claude-box h3 { font-size: 14px; color: #27ae60; margin-bottom: 10px; }
+    .claude-box p  { font-size: 12px; color: #888; line-height: 1.7; margin-bottom: 10px; }
+    .claude-box .steps-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    .claude-step {
+      background: #151f15;
+      border-radius: 6px;
+      padding: 10px 14px;
+      flex: 1;
+      min-width: 160px;
+      border-left: 3px solid #27ae60;
+    }
+    .claude-step .num  { font-size: 10px; color: #27ae60; font-weight: 700; margin-bottom: 4px; }
+    .claude-step .text { font-size: 11px; color: #aaa; line-height: 1.5; }
+    .claude-step code  { background: #0a120a; color: #5edc6e; padding: 1px 5px; border-radius: 3px; font-family: monospace; font-size: 11px; }
+
+    /* Git reference box */
+    .git-box {
+      max-width: 1000px;
+      margin: 0 auto 24px auto;
+      background: #10100a;
+      border: 1px solid #3a3000;
+      border-radius: 10px;
+      padding: 18px 22px;
+    }
+    .git-box h3 { font-size: 14px; color: #e6c040; margin-bottom: 10px; }
+    .git-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .git-cmd {
+      background: #191600;
+      border-radius: 6px;
+      padding: 10px 14px;
+      flex: 1;
+      min-width: 180px;
+      border-left: 3px solid #c8a840;
+    }
+    .git-cmd code  { display: block; font-family: monospace; font-size: 12px; color: #e6c040; margin-bottom: 5px; }
+    .git-cmd .when { font-size: 11px; color: #888; line-height: 1.5; }
   </style>
 </head>
 <body>
 
 <div class="page-title">Jam Day Workflow</div>
 <div class="page-sub">Who does what, when, and with which tools</div>
+
+<!-- CLAUDE CODE EXPLAINER -->
+<div class="claude-box">
+  <h3>🤖 How to use Claude Code — no copy-pasting needed</h3>
+  <p>Claude Code runs <strong>inside VS Code's terminal</strong> and edits your files directly. You describe what you want in plain English, Claude makes the change, you test it in the browser. That's it.</p>
+  <div class="steps-row">
+    <div class="claude-step">
+      <div class="num">STEP 1 — Open terminal</div>
+      <div class="text">In VS Code press <code>Ctrl + `</code> (backtick, left of the 1 key). A terminal panel opens at the bottom.</div>
+    </div>
+    <div class="claude-step">
+      <div class="num">STEP 2 — Launch Claude</div>
+      <div class="text">Type <code>claude</code> and press Enter. You'll see a prompt where you can type your request.</div>
+    </div>
+    <div class="claude-step">
+      <div class="num">STEP 3 — Describe what you want</div>
+      <div class="text">Example: <code>"add a tower that slows enemies"</code> or <code>"make the health bar green"</code>. Be specific about what you want to change.</div>
+    </div>
+    <div class="claude-step">
+      <div class="num">STEP 4 — Claude edits the file</div>
+      <div class="text">Claude finds the right file and makes the change automatically. No copy-pasting. You just review and test.</div>
+    </div>
+    <div class="claude-step">
+      <div class="num">STEP 5 — Test in browser</div>
+      <div class="text">Refresh <code>localhost:5173</code> and try it. If it works, commit. If not, tell Claude what's wrong and it fixes it.</div>
+    </div>
+  </div>
+</div>
+
+<!-- GIT REFERENCE -->
+<div class="git-box">
+  <h3>📦 Git — when to push and pull</h3>
+  <div class="git-row">
+    <div class="git-cmd">
+      <code>git pull</code>
+      <div class="when">⬇ <strong>Get teammates' work.</strong> Run this at the start of each session and before starting a new feature. If you skip this, you might duplicate work or get conflicts.</div>
+    </div>
+    <div class="git-cmd">
+      <code>git add .</code>
+      <div class="when">📌 <strong>Stage your changes.</strong> Run this after something works and you're ready to save it. The dot means "all changed files."</div>
+    </div>
+    <div class="git-cmd">
+      <code>git commit -m "message"</code>
+      <div class="when">💾 <strong>Save a snapshot.</strong> Write a short message describing what you did. Example: <em>"add slow tower"</em> or <em>"fix enemy HP bar"</em>.</div>
+    </div>
+    <div class="git-cmd">
+      <code>git push</code>
+      <div class="when">⬆ <strong>Share with the team.</strong> Sends your commit to GitHub so others can pull it. Only push working code — don't push something broken.</div>
+    </div>
+  </div>
+</div>
 
 <!-- PREP -->
 <div class="phase">
@@ -200,8 +297,8 @@
     </div>
     <div class="step all" style="max-width: 175px;">
       <div class="step-who">🟠 2 · Ask Claude</div>
-      <div class="step-title">Describe it, get code</div>
-      <div class="step-desc">Open Claude Code. Describe what you want. Paste the code into your file in VS Code.</div>
+      <div class="step-title">Ask Claude in VS Code</div>
+      <div class="step-desc">Open VS Code terminal → type <strong>claude</strong> → describe what you want. Claude edits your file directly. No copy-pasting.</div>
       <span class="tool-tag">Claude Code</span>
     </div>
     <div class="step all" style="max-width: 175px;">
